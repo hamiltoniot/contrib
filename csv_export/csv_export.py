@@ -56,7 +56,7 @@ def get_with_pagination(device, time_start, time_end, rollup="1m", into=None, sk
                 into["results"][sensor][cat].extend(body["results"][sensor][cat][sidx:])
         body["results"] = into["results"]
     if body["more"]:
-        return get_with_pagination(device, body["nextFrom"], time_end, rollup, body, skipfirst=True)
+        return get_with_pagination(device, body["nextFrom"], time_end, rollup, body, skipfirst=True, auth=auth)
     else:
         return body
 
