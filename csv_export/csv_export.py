@@ -27,11 +27,12 @@ def list_devices(site, auth=None):
         r = requests.post("https://api.hamiltoniot.com/v1/devices/lookup",
             json={"site":site,"constraintTags":{"_type":"sensor"}}, headers={"Authorization":auth})
         body = r.json()
-        if r.status_code == 420:
-            time.Sleep(0.5)
+        if r.status_code == 420 or ("message" in body and body["message"] == "enhance your calm"):
+            time.sleep(0.5)
             continue
         if r.status_code == 200:
             break
+        print ("status code was ",r.status_code)
         raise Exception(r.text)
     return body
 
@@ -43,12 +44,16 @@ def get_with_pagination(device, time_start, time_end, rollup="1m", into=None, sk
         r = requests.get("https://api.hamiltoniot.com/v1/data/rollup/%s?from=%s&to=%s&millis=0&rollup=%s&limit=1000" % (
         device, time_start, time_end, rollup), headers={"Authorization":auth})
         body = r.json()
-        if r.status_code == 420:
-            time.Sleep(0.5)
+        #print ("got response", body)
+        if r.status_code == 420 or ("message" in body and body["message"] == "enhance your calm"):
+            print ("got ratelimit, we need to slow down")
+            time.sleep(15)
             continue
         if r.status_code == 200:
             break
-        raise Exception(r.text)
+        print ("got pagination response: ", r.text)
+        time.sleep(0.5)
+        #raise Exception(r.text)
     if into is not None:
         for sensor in body["results"]:
             for cat in ["times","maximums","means","minimums","counts"]:
