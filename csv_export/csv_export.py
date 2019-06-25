@@ -13,8 +13,6 @@ SITE="default"
 import pandas as pd
 import requests
 import numpy as np
-import datetime
-import requests
 import time
 import math
 import datetime
